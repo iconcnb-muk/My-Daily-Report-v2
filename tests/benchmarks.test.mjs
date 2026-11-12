@@ -1,0 +1,15 @@
+import assert from 'node:assert/strict';
+import { evaluateBenchmarks } from '../.test-build/benchmarks.js';
+const month = new Date(2024, 1, 1);
+const social = evaluateBenchmarks(month, 3, { '2024-02-01': { social: '০' }, '2024-02-02': { social: '২' }, '2024-02-03': { social: '' } }, {}).find(row => row.key === 'social');
+assert.equal(social.actual, 1, 'zero must not count as a social-work day');
+const quran = evaluateBenchmarks(month, 3, { '2024-02-01': { quran: '✓' }, '2024-02-02': { quran: '' }, '2024-02-03': { quran: '✓' } }, {}).find(row => row.key === 'quran');
+assert.equal(quran.actual, 2);
+assert.equal(quran.expected, 3);
+const leap = evaluateBenchmarks(month, 29, {}, {}).find(row => row.key === 'quran');
+assert.equal(leap.expected, 29);
+const future = evaluateBenchmarks(new Date(2027, 0, 1), 0, {}, {}).find(row => row.key === 'quran');
+assert.equal(future.status, 'future');
+const percent = evaluateBenchmarks(month, 10, {}, { meetings: '৮০' }).find(row => row.key === 'meetings');
+assert.equal(percent.actual, 80);
+console.log('Benchmark checks passed (5 cases).');
